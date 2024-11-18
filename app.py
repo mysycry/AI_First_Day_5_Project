@@ -9,7 +9,7 @@ openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 
 
-st.set_option('deprecation.showPyplotGlobalUse', False)
+#st.set_option('deprecation.showPyplotGlobalUse', False)
 
 # Function to retrieve relevant data from the dataset
 def retrieve_relevant_data(data, query):
