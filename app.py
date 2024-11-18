@@ -10,9 +10,15 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 import numpy as np
+import faiss
+import numpy as np
+from sentence_transformers import SentenceTransformer
 
 # Set up OpenAI API key
-#openai.api_key = st.secrets["OPENAI_API_KEY"]
+openai.api_key = st.secrets["OPENAI_API_KEY"]
+
+# Initialize SentenceTransformer model
+model = SentenceTransformer('all-MiniLM-L6-v2')
 
 # Function to load data
 @st.cache_data
@@ -23,30 +29,100 @@ def load_data():
     data['Date'] = pd.to_datetime(data['Date'])
     return data
 
-# Function to generate insights using OpenAI
+# Function to create and update vector database
+@st.cache_resource
+def create_vector_db(data):
+    texts = [
+        f"On {row['Date']}, historical sales were {row['Historical Sales (PHP)']:.2f} PHP, "
+        f"market trend factor was {row['Market Trend Factor']:.2f}, "
+        f"user behavior score was {row['User Behavior Score']:.2f}, "
+        f"revenue forecast was {row['Revenue Forecast (PHP)']:.2f} PHP, "
+        f"and new opportunity score was {row['New Opportunity Score']:.2f}."
+        for _, row in data.iterrows()
+    ]
+    embeddings = model.encode(texts)
+    index = faiss.IndexFlatL2(embeddings.shape[1])
+    index.add(embeddings.astype('float32'))
+    return index, texts
+
+# Function to generate insights using OpenAI with more advanced NLG
 def generate_insights(data):
+    summary_stats = {
+        "avg_historical_sales": data['Historical Sales (PHP)'].mean(),
+        "avg_revenue_forecast": data['Revenue Forecast (PHP)'].mean(),
+        "avg_market_trend": data['Market Trend Factor'].mean(),
+        "avg_user_behavior": data['User Behavior Score'].mean(),
+        "avg_new_opportunity": data['New Opportunity Score'].mean(),
+        "total_records": len(data),
+        "date_range": f"{data['Date'].min().date()} to {data['Date'].max().date()}"
+    }
+    
     prompt = f"""
-    Analyze the following financial data and provide insights:
-    
-    1. Average Historical Sales: {data['Historical Sales (PHP)'].mean():.2f}
-    2. Average Revenue Forecast: {data['Revenue Forecast (PHP)'].mean():.2f}
-    3. Average Market Trend Factor: {data['Market Trend Factor'].mean():.2f}
-    4. Average User Behavior Score: {data['User Behavior Score'].mean():.2f}
-    5. Average New Opportunity Score: {data['New Opportunity Score'].mean():.2f}
-    
-    Provide a concise summary of the data, including potential trends, opportunities, and recommendations for the business.
+    You are an AI financial analyst specializing in revenue forecasting for Philippine startups. Analyze the following financial data summary and provide insights:
+
+    1. Date Range: {summary_stats['date_range']}
+    2. Total Records: {summary_stats['total_records']}
+    3. Average Historical Sales: {summary_stats['avg_historical_sales']:.2f} PHP
+    4. Average Revenue Forecast: {summary_stats['avg_revenue_forecast']:.2f} PHP
+    5. Average Market Trend Factor: {summary_stats['avg_market_trend']:.2f}
+    6. Average User Behavior Score: {summary_stats['avg_user_behavior']:.2f}
+    7. Average New Opportunity Score: {summary_stats['avg_new_opportunity']:.2f}
+
+    Provide a concise summary of the data, including:
+    1. Overall trends in historical sales and revenue forecasts
+    2. The relationship between market trends and user behavior
+    3. Potential new opportunities based on the data
+    4. Recommendations for Philippine startups to improve their revenue forecasting and identify growth opportunities
+
+    Format your response in markdown, using headers, bullet points, and emphasis where appropriate.
     """
     
-    response = openai.Completion.create(
-        engine="text-davinci-002",
-        prompt=prompt,
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are an AI financial analyst specializing in revenue forecasting for Philippine startups."},
+            {"role": "user", "content": prompt}
+        ],
+        max_tokens=800,
+        n=1,
+        stop=None,
+        temperature=0.7,
+    )
+    
+    return response.choices[0].message['content']
+
+# Function for RAG-based query
+def rag_query(query, index, texts):
+    query_vector = model.encode([query])
+    k = 5  # Number of nearest neighbors to retrieve
+    distances, indices = index.search(query_vector.astype('float32'), k)
+    
+    context = "\n".join([texts[i] for i in indices[0]])
+    
+    prompt = f"""
+    You are an AI financial analyst specializing in revenue forecasting for Philippine startups. Use the following context to answer the user's question:
+
+    Context:
+    {context}
+
+    User's question: {query}
+
+    Provide a concise and informative answer based on the given context. If the question cannot be answered using the context, say so.
+    """
+    
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are an AI financial analyst specializing in revenue forecasting for Philippine startups."},
+            {"role": "user", "content": prompt}
+        ],
         max_tokens=300,
         n=1,
         stop=None,
         temperature=0.7,
     )
     
-    return response.choices[0].text.strip()
+    return response.choices[0].message['content']
 
 # Function to train and evaluate the model
 def train_evaluate_model(X, y):
@@ -66,6 +142,9 @@ def main():
 
     # Load data
     data = load_data()
+
+    # Create vector database
+    index, texts = create_vector_db(data)
 
     # Sidebar for date range selection
     st.sidebar.header("Date Range Selection")
@@ -102,7 +181,7 @@ def main():
     # Generate insights using OpenAI
     st.subheader("AI-Generated Insights")
     insights = generate_insights(filtered_data)
-    st.write(insights)
+    st.markdown(insights)
 
     # Train and evaluate the model
     st.subheader("Revenue Forecast Model")
@@ -125,6 +204,13 @@ def main():
     prediction = model.predict(input_data)[0]
 
     st.write(f"Predicted Revenue Forecast: PHP {prediction:.2f}")
+
+    # RAG-based query section
+    st.subheader("Ask Questions About the Data")
+    user_question = st.text_input("Enter your question about the financial data:")
+    if user_question:
+        answer = rag_query(user_question, index, texts)
+        st.markdown(answer)
 
 if __name__ == "__main__":
     main()
