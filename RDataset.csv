@@ -1,51 +1,91 @@
-Date,Historical Sales (PHP),Market Trend Factor,User Behavior Score,Revenue Forecast (PHP),New Opportunity Score
-2023-02-20,62778.64,0.23,8.71,71134.48,3.77
-2022-09-14,171397.19,-0.52,1.82,156691.31,4.7
-2022-02-02,220431.13,-0.01,9.14,240137.67,0.91
-2023-01-02,465550.13,0.15,1.23,485242.9,1.4
-2023-09-17,30153.74,-0.55,0.47,26978.55,0.04
-2022-09-09,77443.22,-0.5,7.4,75429.7,2.44
-2022-06-10,415673.83,-0.05,6.03,436582.22,2.3
-2023-09-27,17304.47,0.27,6.76,19408.69,3.64
-2023-02-23,16834.7,-0.15,2.88,16814.5,4.12
-2022-12-15,354748.22,-0.19,0.9,344460.52,3.73
-2023-07-04,165218.25,0.62,6.73,196824.5,3.86
-2022-02-26,240466.43,-0.6,4.84,223249.03,2.94
-2023-02-09,316191.34,-0.65,7.86,299939.11,1.05
-2023-05-09,67408.94,0.59,2.81,77257.39,3.72
-2023-08-02,467097.08,0.55,2.71,531136.09,1.85
-2023-10-20,204300.31,0.77,1.12,238050.72,1.72
-2022-06-08,453558.47,0.78,9.35,566721.31,0.92
-2023-07-23,497055.76,0.52,8.02,588613.43,3.42
-2023-01-13,368498.91,-0.29,5.14,366066.82,0.4
-2023-06-27,100784.97,-0.71,10.0,96552.0,2.39
-2022-12-08,360899.25,-0.78,8.5,335275.4,4.04
-2023-12-19,278744.34,-0.95,9.78,253044.11,0.36
-2022-07-22,425204.54,-0.52,3.38,395355.18,3.89
-2023-02-11,498905.05,0.64,8.62,605770.51,3.6
-2023-02-25,445315.47,-0.72,4.76,402387.06,4.26
-2022-04-25,452668.15,-0.94,0.12,368109.74,0.9
-2022-12-16,254123.6,0.66,2.39,293741.47,4.23
-2023-05-27,389614.49,0.41,1.44,427173.33,2.72
-2022-06-05,495939.97,-0.47,8.07,489343.97,4.17
-2023-04-05,256372.2,0.06,2.26,265242.68,3.06
-2022-07-31,49638.32,0.97,4.42,61462.17,0.45
-2023-07-10,211479.39,-0.09,1.67,211204.47,3.01
-2022-09-26,14902.28,0.07,4.13,15726.38,0.09
-2022-01-17,324921.98,0.26,9.62,373075.42,1.5
-2022-08-17,448870.1,0.82,5.72,548160.17,0.23
-2022-04-03,333342.12,-0.15,9.82,356076.05,3.55
-2022-02-03,368240.48,-0.15,0.07,357451.03,2.86
-2022-05-04,489114.78,0.82,0.95,573976.19,4.85
-2023-11-21,172911.45,0.0,2.86,177856.72,2.26
-2023-10-09,355117.02,0.1,2.65,371629.96,2.95
-2023-11-28,135548.6,0.98,4.56,168297.14,0.96
-2022-06-20,230318.95,0.2,2.17,244529.63,3.93
-2022-01-27,426152.66,-0.79,2.08,367684.52,4.43
-2023-06-01,138478.02,-0.43,6.16,135099.16,3.41
-2023-05-25,213889.05,-0.18,8.1,223514.06,3.57
-2022-04-30,54811.27,0.12,3.86,58242.46,4.57
-2022-04-14,246681.48,0.07,0.15,250505.04,0.36
-2022-02-14,335443.85,0.07,3.87,353121.74,3.4
-2023-08-19,338845.73,0.4,0.83,368765.81,2.86
-2022-01-20,435923.12,-0.28,6.19,438495.07,0.67
+Customer_Segment,Ad_Campaign,Ad_Budget,Clicks,Conversions,ROI
+Young Adults,Social Media Ads,500,120,15,1.2
+Tech Enthusiasts,Email Marketing,1000,180,22,1.5
+Parents,Online Video Ads,1500,250,35,1.8
+Small Business Owners,Search Engine Marketing,2000,320,45,2.1
+Frequent Travelers,Influencer Partnerships,2500,380,52,2.3
+Young Adults,Display Advertising,3000,450,65,2.6
+Tech Enthusiasts,Content Marketing,3500,520,75,2.8
+Parents,Mobile App Ads,4000,580,82,3.0
+Small Business Owners,Social Media Ads,4500,650,92,3.2
+Frequent Travelers,Email Marketing,5000,720,105,3.4
+Young Adults,Online Video Ads,5500,780,112,3.5
+Tech Enthusiasts,Search Engine Marketing,6000,850,122,3.6
+Parents,Influencer Partnerships,6500,920,135,3.7
+Small Business Owners,Display Advertising,7000,980,142,3.8
+Frequent Travelers,Content Marketing,7500,1050,155,3.9
+Young Adults,Mobile App Ads,8000,1120,165,4.0
+Tech Enthusiasts,Social Media Ads,8500,1180,172,4.1
+Parents,Email Marketing,9000,1250,185,4.2
+Small Business Owners,Online Video Ads,9500,1320,195,4.3
+Frequent Travelers,Search Engine Marketing,10000,1380,205,4.4
+Young Adults,Influencer Partnerships,10500,1450,215,4.5
+Tech Enthusiasts,Display Advertising,11000,1520,225,4.6
+Parents,Content Marketing,11500,1580,232,4.7
+Small Business Owners,Mobile App Ads,12000,1650,242,4.8
+Frequent Travelers,Social Media Ads,12500,1720,255,4.9
+Young Adults,Email Marketing,13000,1780,262,5.0
+Tech Enthusiasts,Online Video Ads,13500,1850,275,4.9
+Parents,Search Engine Marketing,14000,1920,285,4.8
+Small Business Owners,Influencer Partnerships,14500,1980,292,4.7
+Frequent Travelers,Display Advertising,15000,2050,305,4.6
+Young Adults,Content Marketing,15500,2120,315,4.5
+Tech Enthusiasts,Mobile App Ads,16000,2180,322,4.4
+Parents,Social Media Ads,16500,2250,335,4.3
+Small Business Owners,Email Marketing,17000,2320,345,4.2
+Frequent Travelers,Online Video Ads,17500,2380,352,4.1
+Young Adults,Search Engine Marketing,18000,2450,365,4.0
+Tech Enthusiasts,Influencer Partnerships,18500,2520,375,3.9
+Parents,Display Advertising,19000,2580,382,3.8
+Small Business Owners,Content Marketing,19500,2650,395,3.7
+Frequent Travelers,Mobile App Ads,20000,2720,405,3.6
+Young Adults,Social Media Ads,500,130,18,1.3
+Tech Enthusiasts,Email Marketing,1000,190,25,1.6
+Parents,Online Video Ads,1500,260,38,1.9
+Small Business Owners,Search Engine Marketing,2000,330,48,2.2
+Frequent Travelers,Influencer Partnerships,2500,390,55,2.4
+Young Adults,Display Advertising,3000,460,68,2.7
+Tech Enthusiasts,Content Marketing,3500,530,78,2.9
+Parents,Mobile App Ads,4000,590,85,3.1
+Small Business Owners,Social Media Ads,4500,660,95,3.3
+Frequent Travelers,Email Marketing,5000,730,108,3.5
+Young Adults,Online Video Ads,5500,790,115,3.6
+Tech Enthusiasts,Search Engine Marketing,6000,860,125,3.7
+Parents,Influencer Partnerships,6500,930,138,3.8
+Small Business Owners,Display Advertising,7000,990,145,3.9
+Frequent Travelers,Content Marketing,7500,1060,158,4.0
+Young Adults,Mobile App Ads,8000,1130,168,4.1
+Tech Enthusiasts,Social Media Ads,8500,1190,175,4.2
+Parents,Email Marketing,9000,1260,188,4.3
+Small Business Owners,Online Video Ads,9500,1330,198,4.4
+Frequent Travelers,Search Engine Marketing,10000,1390,208,4.5
+Young Adults,Influencer Partnerships,10500,1460,218,4.6
+Tech Enthusiasts,Display Advertising,11000,1530,228,4.7
+Parents,Content Marketing,11500,1590,235,4.8
+Small Business Owners,Mobile App Ads,12000,1660,245,4.9
+Frequent Travelers,Social Media Ads,12500,1730,258,5.0
+Young Adults,Email Marketing,13000,1790,265,4.9
+Tech Enthusiasts,Online Video Ads,13500,1860,278,4.8
+Parents,Search Engine Marketing,14000,1930,288,4.7
+Small Business Owners,Influencer Partnerships,14500,1990,295,4.6
+Frequent Travelers,Display Advertising,15000,2060,308,4.5
+Young Adults,Content Marketing,15500,2130,318,4.4
+Tech Enthusiasts,Mobile App Ads,16000,2190,325,4.3
+Parents,Social Media Ads,16500,2260,338,4.2
+Small Business Owners,Email Marketing,17000,2330,348,4.1
+Frequent Travelers,Online Video Ads,17500,2390,355,4.0
+Young Adults,Search Engine Marketing,18000,2460,368,3.9
+Tech Enthusiasts,Influencer Partnerships,18500,2530,378,3.8
+Parents,Display Advertising,19000,2590,385,3.7
+Small Business Owners,Content Marketing,19500,2660,398,3.6
+Frequent Travelers,Mobile App Ads,20000,2730,408,3.5
+Young Adults,Social Media Ads,500,140,20,1.4
+Tech Enthusiasts,Email Marketing,1000,200,28,1.7
+Parents,Online Video Ads,1500,270,40,2.0
+Small Business Owners,Search Engine Marketing,2000,340,50,2.3
+Frequent Travelers,Influencer Partnerships,2500,400,58,2.5
+Young Adults,Display Advertising,3000,470,70,2.8
+Tech Enthusiasts,Content Marketing,3500,540,80,3.0
+Parents,Mobile App Ads,4000,600,88,3.2
+Small Business Owners,Social Media Ads,4500,670,98,3.4
+Frequent Travelers,Email Marketing,5000,740,110,3.6
