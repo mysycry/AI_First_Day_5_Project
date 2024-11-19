@@ -9,6 +9,7 @@ from io import StringIO
 # Set OpenAI API Key (assumed it's stored as an environment variable or in Streamlit secrets)
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
+
 # Embedded CSV data
 csv_data = """
 user_id,age,device_type,time_of_day,preferred_language,industry,role,tech_savviness,completion_time_mins,tutorials_watched,help_accessed,features_explored,path_chosen,onboarding_complete,retention_7_day,satisfaction_score
@@ -108,44 +109,117 @@ user_id,age,device_type,time_of_day,preferred_language,industry,role,tech_savvin
 def retrieve_relevant_data(data, query):
     """
     Retrieve relevant data from the dataset based on the user's query.
-    This could be based on keywords or user-selected filters.
     """
-    # Simple keyword-based retrieval (can be extended to more complex logic)
     if "satisfaction" in query.lower():
-        return data[['age', 'industry', 'satisfaction_score']].dropna()
+        return data[['age', 'industry', 'satisfaction_score']]
     elif "retention" in query.lower():
-        return data[['age', 'industry', 'retention_7_day']].dropna()
+        return data[['age', 'industry', 'retention_7_day']]
     elif "behavior" in query.lower():
-        return data[['age', 'device_type', 'time_of_day', 'satisfaction_score']].dropna()
+        return data[['age', 'device_type', 'time_of_day', 'satisfaction_score']]
     else:
-        # Default: return all data if no specific query is found
-        return data.head()
+        return data  # Return the full dataset for general queries
 
 # Function to call OpenAI's API for text generation
-def generate_nlg_response(prompt):
+def generate_nlg_response(prompt, data):
     """
     Generate text using OpenAI's GPT model for NLG.
     """
-    #response = openai.completions.create(
-     #response = openai.ChatCompletion.create(
-        #model="gpt-4o-mini",
-        #temperature=0.7,
-        #max_tokens=1500,
-        #prompt=prompt
-     #)
-      #return response.choices[0].text.strip()"""
-    response = openai.ChatCompletion.create(
-                model="gpt-4o-mini",
-                temperature=0.3,
-                max_tokens=1024,
-                messages=[
-                    {"role": "system", "content": prompt},
-                    {"role": "user", "content": prompt}
-                ]
-            )
-    return None
+    try:
+        # Prepare a summary of the data
+        data_summary = data.describe().to_string()
+        data_head = data.head().to_string()
+        data_tail = data.tail().to_string()
+        
+        full_prompt = f"""Analyze the following dataset:
 
+Summary Statistics:
+{data_summary}
 
+First few rows:
+{data_head}
+
+Last few rows:
+{data_tail}
+
+Now, based on this data, {prompt}
+
+Provide a detailed analysis, including exact counts and percentages where applicable."""
+
+        response = openai.ChatCompletion.create(
+            model="gpt-4o-mini",  # Using a model with larger context
+            messages=[
+                {"role": "system", "content": "You are an AI assistant analyzing user behavior data. Provide accurate statistics and insights based on the full dataset."},
+                {"role": "user", "content": full_prompt}
+            ],
+            temperature=0.7,
+            max_tokens=1000
+        )
+        return response.choices[0].message['content'].strip()
+    except Exception as e:
+        st.error(f"Error in generating NLG response: {str(e)}")
+        return "Sorry, I couldn't generate a response at this time."
+
+# Set page config
+st.set_page_config(page_title="Baldwin Predictions AI", layout="wide")
+
+# Apply glass neumorphic design CSS
+st.markdown("""
+<style>
+    .main {
+        background-color: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 20px 20px 40px -6px rgba(0,0,0,0.2);
+    }
+    .sidebar .sidebar-content {
+        background-color: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+    }
+    .stButton>button {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 24px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .stButton>button:hover {
+        background-color: rgba(255, 255, 255, 0.3);
+    }
+    .stTextInput>div>div>input {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: none;
+        border-radius: 5px;
+    }
+    .stSelectbox>div>div>select {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: none;
+        border-radius: 5px;
+    }
+    .scroll-table {
+        max-height: 300px;
+        overflow-y: scroll;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+    .scroll-table::-webkit-scrollbar {
+        width: 12px;
+    }
+    .scroll-table::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+    }
+    .scroll-table::-webkit-scrollbar-thumb {
+        background-color: rgba(255, 255, 255, 0.3);
+        border-radius: 6px;
+        border: 3px solid rgba(255, 255, 255, 0.1);
+    }
+</style>
+""", unsafe_allow_html=True)
 
 # Title of the app
 st.title("Baldwin Predictions AI - User Behavior Insights with NLG & RAG")
@@ -153,114 +227,76 @@ st.title("Baldwin Predictions AI - User Behavior Insights with NLG & RAG")
 # Load the CSV data
 data = pd.read_csv(io.StringIO(csv_data))
 
-# Display the data in a fancy table looking like a scroll
-st.subheader("User Behavior Data")
-st.markdown(
-    """
-    <style>
-    .scroll-table {
-        max-height: 300px;
-        overflow-y: scroll;
-        border: 2px solid #ddd;
-        border-radius: 5px;
-        background-color: #f9f9f9;
-    }
-    .scroll-table::-webkit-scrollbar {
-        width: 12px;
-    }
-    .scroll-table::-webkit-scrollbar-track {
-        background: #f1f1f1;
-    }
-    .scroll-table::-webkit-scrollbar-thumb {
-        background-color: #888;
-        border-radius: 6px;
-        border: 3px solid #f1f1f1;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+# Sidebar - Ask AI feature
+st.sidebar.title("Ask AI")
+query = st.sidebar.text_area("Ask a question about user behavior or satisfaction:")
+if st.sidebar.button("Get AI Insights"):
+    if query:
+        retrieved_data = retrieve_relevant_data(data, query)
+        nlg_response = generate_nlg_response(query, retrieved_data)
+        st.sidebar.write("AI Response:", nlg_response)
 
+# Main content
+st.subheader("User Behavior Data")
 st.markdown('<div class="scroll-table">', unsafe_allow_html=True)
-st.dataframe(data.style.set_properties(**{'background-color': '#f9f9f9', 'color': '#333'}))
+st.dataframe(data.style.set_properties(**{'background-color': 'rgba(255, 255, 255, 0.1)', 'color': 'white'}))
 st.markdown('</div>', unsafe_allow_html=True)
 
 # Option for the user to select the analysis type
-analysis_type = st.sidebar.selectbox("Select Analysis", ("User Satisfaction Prediction", "Retention Forecast", "User Behavior Insights", "Ask AI"))
+analysis_type = st.selectbox("Select Analysis", ("User Satisfaction Prediction", "Retention Forecast", "User Behavior Insights"))
 
 # User Satisfaction Prediction
 if analysis_type == "User Satisfaction Prediction":
     st.subheader("Predicting User Satisfaction Based on User Data")
-    # Select columns for analysis
     age = st.slider("Select Age Range", int(data["age"].min()), int(data["age"].max()), (20, 40))
     industry = st.selectbox("Select Industry", data["industry"].unique())
 
     filtered_data = data[(data["age"] >= age[0]) & (data["age"] <= age[1])]
     filtered_data = filtered_data[filtered_data["industry"] == industry]
     
-    # Fetch relevant data for RAG
     retrieved_data = retrieve_relevant_data(filtered_data, "satisfaction")
-    prompt = f"Based on the data of user behavior, predict the user satisfaction score for users in the {industry} industry, aged between {age[0]} and {age[1]}."
+    prompt = f"Predict the user satisfaction score for users in the {industry} industry, aged between {age[0]} and {age[1]}. Provide a detailed analysis."
 
-    # Use OpenAI API for NLG
-    nlg_response = generate_nlg_response(prompt)
+    nlg_response = generate_nlg_response(prompt, retrieved_data)
     st.write("Prediction of user satisfaction:", nlg_response)
 
 # Retention Forecast
 elif analysis_type == "Retention Forecast":
     st.subheader("Forecasting Retention Rate (7-day)")
-    
-    # Select user characteristics for filtering
     age = st.slider("Select Age Range", int(data["age"].min()), int(data["age"].max()), (20,40))
     industry = st.selectbox("Select Industry", data["industry"].unique())
     
-    # Filter data based on user selection
     filtered_data = data[(data["age"] >= age[0]) & (data["age"] <= age[1])]
     filtered_data = filtered_data[filtered_data["industry"] == industry]
     
-    # Fetch relevant data for RAG
     retrieved_data = retrieve_relevant_data(filtered_data, "retention")
-    prompt = f"Based on the data of user retention over the first 7 days, forecast the retention rate for users in the {industry} industry, aged between {age[0]} and {age[1]}."
+    prompt = f"Forecast the retention rate for users in the {industry} industry, aged between {age[0]} and {age[1]}. Provide a detailed analysis."
 
-    # Use OpenAI API for NLG
-    nlg_response = generate_nlg_response(prompt)
+    nlg_response = generate_nlg_response(prompt, retrieved_data)
     st.write("Forecasted Retention Rate (7 days):", nlg_response)
 
 # User Behavior Insights
 elif analysis_type == "User Behavior Insights":
     st.subheader("Analyzing User Behavior Based on Time of Day")
-    
-    # Select variables for behavior analysis
     time_of_day = st.selectbox("Select Time of Day", data["time_of_day"].unique())
     device_type = st.selectbox("Select Device Type", data["device_type"].unique())
 
     filtered_data = data[(data["time_of_day"] == time_of_day) & (data["device_type"] == device_type)]
     
-    # Calculate mean satisfaction score for the filtered data
     mean_satisfaction = filtered_data["satisfaction_score"].mean()
     st.write(f"Average Satisfaction Score for {time_of_day} and {device_type} users: {mean_satisfaction:.2f}")
 
-    # Fetch relevant data for RAG
     retrieved_data = retrieve_relevant_data(filtered_data, "behavior")
     
-    # Plot the distribution of satisfaction scores
-    plt.figure(figsize=(8, 6))
-    plt.hist(filtered_data["satisfaction_score"], bins=10, color='skyblue', edgecolor='black')
-    plt.title(f"Satisfaction Scores for {time_of_day} Users on {device_type}")
-    plt.xlabel("Satisfaction Score")
-    plt.ylabel("Frequency")
-    st.pyplot()
+    fig, ax = plt.subplots(figsize=(8, 6))
+    ax.hist(filtered_data["satisfaction_score"], bins=10, color='skyblue', edgecolor='black')
+    ax.set_title(f"Satisfaction Scores for {time_of_day} Users on {device_type}")
+    ax.set_xlabel("Satisfaction Score")
+    ax.set_ylabel("Frequency")
+    ax.set_facecolor('none')
+    fig.patch.set_alpha(0.0)
+    st.pyplot(fig)
 
-# "Ask AI" feature (user query-based)
-elif analysis_type == "Ask AI":
-    st.subheader("Ask AI for Insights on User Data")
-    query = st.text_area("Ask a question about user behavior or satisfaction:")
-    
-    if query:
-        # Fetch relevant data for the user's question
-        retrieved_data = retrieve_relevant_data(data, query)
-        
-        # Use OpenAI API for NLG to respond to the user's query
-        prompt = f"Answer the following question based on this data: {query}\n\n{retrieved_data.to_string(index=False)}"
-        nlg_response = generate_nlg_response(prompt)
-        st.write("AI Response:", nlg_response)
+    prompt = f"Analyze the user behavior for {time_of_day} users on {device_type} devices. Provide insights on satisfaction scores and any notable patterns."
+    nlg_response = generate_nlg_response(prompt, retrieved_data)
+    st.write("User Behavior Analysis:", nlg_response)
